@@ -1,40 +1,52 @@
 import { Button } from "flowbite-react";
-import { auth, googleProvider } from "@/firebase/firebaseConfig";
+
 import { signInWithPopup } from "firebase/auth";
-import axios from "axios";
-import { serverURL } from "../../constants";
+import { GoogleAuthProvider } from "firebase/auth";
+import { auth } from "../../firebase/firebaseConfig";
 
 const GoogleSignUpButton = ({ text, navigate, showToast }) => {
   const handleGoogleSignIn = async () => {
     try {
-      console.log("sign");
-      const result = await signInWithPopup(auth, googleProvider);
-      const { _tokenResponse } = result;
-      const user = result.user;
-      const token = await user.getIdToken(); // Get the user's token
+      const provider = new GoogleAuthProvider();
+      signInWithPopup(auth, provider).then((result) => {
+        if (result.user) {
+          showToast("Your are successfully logged in");
+          sessionStorage.setItem("email", result.user.email);
+          sessionStorage.setItem("mName", result.user.displayName);
+          sessionStorage.setItem("auth", true);
+          sessionStorage.setItem("uid", result.user.uid);
+          navigate("/home");
+        }
 
-      const postURL = `${serverURL}/api/google/auth`;
-
-      const res = await axios.post(postURL, {
-        token,
-        name: _tokenResponse.fullName,
-        email: _tokenResponse.email,
       });
+      // console.log("sign");
+      // const result = await signInWithPopup(auth, googleProvider);
+      // const { _tokenResponse } = result;
+      // const user = result.user;
+      // const token = await user.getIdToken(); // Get the user's token
 
-      console.log(res);
+      // const postURL = `${serverURL}/api/google/auth`;
 
-      if (res.data.success) {
-        console.log("5");
-        showToast(res.data.message);
-        sessionStorage.setItem("email", res.data.userData.email);
-        sessionStorage.setItem("mName", res.data.userData.mName);
-        sessionStorage.setItem("auth", true);
-        sessionStorage.setItem("uid", res.data.userData.id);
-        sessionStorage.setItem("type", res.data.userData.type);
-        navigate("/home");
-      } else {
-        showToast(res.data.message);
-      }
+      // const res = await axios.post(postURL, {
+      //   token,
+      //   name: _tokenResponse.fullName,
+      //   email: _tokenResponse.email,
+      // });
+
+      // console.log(res);
+
+      // if (res.data.success) {
+      //   console.log("5");
+      //   showToast(res.data.message);
+      //   sessionStorage.setItem("email", res.data.userData.email);
+      //   sessionStorage.setItem("mName", res.data.userData.mName);
+      //   sessionStorage.setItem("auth", true);
+      //   sessionStorage.setItem("uid", res.data.userData.id);
+      //   sessionStorage.setItem("type", res.data.userData.type);
+      //   navigate("/home");
+      // } else {
+      //   showToast(res.data.message);
+      // }
     } catch (error) {
       showToast("Google sign-in failed");
     }
