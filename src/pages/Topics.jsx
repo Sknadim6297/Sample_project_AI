@@ -232,13 +232,13 @@ const Topics = () => {
         <div>
           {topics.map((topic) => (
             <div key={topic.title}>
-              <h3 className="w-full text-white bg-black px-4 py-2 mt-8 mb-2 font-black text-lg dark:bg-white dark:text-black">
+              <h3 className="w-full cursor-pointer text-white bg-black px-4 py-2 mt-8 mb-2 font-black text-lg dark:bg-white dark:text-black">
                 {topic.title}
               </h3>
               <div>
                 {topic.subtopics.map((subtopic) => (
                   <p
-                    className="w-full border-black border bg-white px-4 py-2 mb-2 font-normal text-sm dark:text-white dark:border-white dark:bg-black"
+                    className="w-full cursor-pointer border-black border bg-white px-4 py-2 mb-2 font-normal text-sm dark:text-white dark:border-white dark:bg-black"
                     key={subtopic.title}
                   >
                     {subtopic.title}

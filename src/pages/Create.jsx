@@ -1,7 +1,7 @@
 // eslint-disable-next-line
 import React, { useEffect, useState } from "react";
 import Header from "../components/header";
-import Footers from "../components/footers";
+import Footers from "../components/Footers";
 import { Button, Label, Radio } from "flowbite-react";
 import { AiOutlineLoading } from "react-icons/ai";
 import { toast } from "react-toastify";

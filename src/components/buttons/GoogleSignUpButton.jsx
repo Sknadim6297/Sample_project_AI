@@ -4,17 +4,21 @@ import { signInWithPopup } from "firebase/auth";
 import { GoogleAuthProvider } from "firebase/auth";
 import { auth } from "../../firebase/firebaseConfig";
 
-const GoogleSignUpButton = ({ text, navigate, showToast }) => {
+const GoogleSignUpButton =  ({ text, navigate, showToast, sendEmail }) => {
+
+  
   const handleGoogleSignIn = async () => {
     try {
       const provider = new GoogleAuthProvider();
       signInWithPopup(auth, provider).then((result) => {
         if (result.user) {
           showToast("Your are successfully logged in");
-          sessionStorage.setItem("email", result.user.email);
-          sessionStorage.setItem("mName", result.user.displayName);
+          const user=result.user;
+          sessionStorage.setItem("email", user.email);
+          sessionStorage.setItem("mName", user.displayName);
           sessionStorage.setItem("auth", true);
-          sessionStorage.setItem("uid", result.user.uid);
+          sessionStorage.setItem("uid",user.uid);
+          //  sendEmail(user.email, user.displayName);   
           navigate("/home");
         }
 

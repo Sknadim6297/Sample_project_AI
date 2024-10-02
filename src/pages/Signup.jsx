@@ -5,16 +5,16 @@ import { Button, Label } from "flowbite-react";
 import { company, logo, name, serverURL, websiteURL } from "../constants";
 import DarkModeToggle from "../components/DarkModeToggle";
 import LogoComponent from "../components/LogoComponent";
-import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { AiOutlineLoading } from "react-icons/ai";
-import { setDoc,doc } from "firebase/firestore";
+import { setDoc, doc } from "firebase/firestore";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import { createUserWithEmailAndPassword, GoogleAuthProvider } from "firebase/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import GoogleSignUpButton from "../components/buttons/GoogleSignUpButton";
 import { auth } from "../firebase/firebaseConfig";
 import { db } from "../firebase/firebaseConfig";
+import axios from "axios";
 
 const SignUp = () => {
   const storedTheme = sessionStorage.getItem("darkMode");
@@ -24,6 +24,7 @@ const SignUp = () => {
   const [processing, setProcessing] = useState(false);
 
   const navigate = useNavigate();
+  
   function redirectSignIn() {
     navigate("/signin");
   }
@@ -58,62 +59,49 @@ const SignUp = () => {
   const handleSignup = async (e) => {
     e.preventDefault();
     setProcessing(true);
-    // if (!mName || !email || !password) {
-    //   showToast("Please fill in all required fields");
-    //   return;
-    // } else if (password.length < 9) {
-    //   showToast("Password should be at least 9 characters");
-    //   return;
-    // }
-    // const postURL = serverURL + "/api/signup";
-    // const type = "free";
+    if (!mName || !email || !password) {
+      showToast("Please fill in all required fields");
+      return;
+    } else if (password.length < 9) {
+      showToast("Password should be at least 9 characters");
+      return;
+    }
+    
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      const user=auth.currentUser;
-      console.log(user);
-      console.log("User Registered");
+      const user = auth.currentUser;
 
-      if(user){
+      if (user) {
         await setDoc(doc(db, "users", user.uid), {
           name: mName,
           email: user.email,
         });
-        console.log("User Data Saved");
         showToast("User Registered");
-
         sessionStorage.setItem("email", email);
-          sessionStorage.setItem("mName", mName);
-          sessionStorage.setItem("auth", true);
-          sessionStorage.setItem("uid", user.uid);
-          sessionStorage.setItem("type", "free");
-          sendEmail(user.email, mName);
+        sessionStorage.setItem("mName", mName);
+        sessionStorage.setItem("auth", true);
+        sessionStorage.setItem("uid", user.uid);
+        sessionStorage.setItem("type", "free");
+
+        sendEmail(email, mName);
       }
-      
-      
-      // if (response.data.success) {
-      //   showToast(response.data.message);
-      //   sessionStorage.setItem("email", email);
-      //   sessionStorage.setItem("mName", mName);
-      //   sessionStorage.setItem("auth", true);
-      //   sessionStorage.setItem("uid", response.data.userId);
-      //   sessionStorage.setItem("type", "free");
-      //   sendEmail(email, mName);
-      // } else {
-      //   showToast(response.data.message);
-      // }
+
     } catch (error) {
-      console.log(error.message);
-      
-      showToast("Internal Server Error!");
+      console.log(error);
+      showToast(error.message);
     }
   };
 
-  async function sendEmail(mEmail, mName) {
-    console.log("Sending email to:", mEmail);
+  async function sendEmail(email, mName) {
+    const emailName = name;  
+    const emailLogo = logo;  
+    const emailWebsiteURL = websiteURL; 
+    const emailCompany = company; 
+    console.log("Sending email to:", email);
     try {
       const dataToSend = {
         subject: `Welcome to ${name}`,
-        to: mEmail,
+        to: email,
         html: `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
                 <meta http-equiv="Content-Type" content="text/html charset=UTF-8" />
                 <html lang="en">
@@ -129,21 +117,21 @@ const SignUp = () => {
                           <table align="center" border="0" cellPadding="0" cellSpacing="0" role="presentation" width="100%" style="margin-top:32px">
                             <tbody>
                               <tr>
-                                <td><img alt="Vercel" src="${logo}" width="40" height="37" style="display:block;outline:none;border:none;text-decoration:none;margin-left:auto;margin-right:auto;margin-top:0px;margin-bottom:0px" /></td>
+                                <td><img alt="Vercel" src="${emailLogo}" width="40" height="37" style="display:block;outline:none;border:none;text-decoration:none;margin-left:auto;margin-right:auto;margin-top:0px;margin-bottom:0px" /></td>
                               </tr>
                             </tbody>
                           </table>
-                          <h1 style="margin-left:0px;margin-right:0px;margin-top:30px;margin-bottom:30px;padding:0px;text-align:center;font-size:24px;font-weight:400;color:rgb(0,0,0)">Welcome to <strong>${name}</strong></h1>
+                          <h1 style="margin-left:0px;margin-right:0px;margin-top:30px;margin-bottom:30px;padding:0px;text-align:center;font-size:24px;font-weight:400;color:rgb(0,0,0)">Welcome to <strong>${emailName}</strong></h1>
                           <p style="font-size:14px;line-height:24px;margin:16px 0;color:rgb(0,0,0)">Hello <strong>${mName}</strong>,</p>
-                          <p style="font-size:14px;line-height:24px;margin:16px 0;color:rgb(0,0,0)">Welcome to <strong>${name}</strong>, Unleash your AI potential with our platform, offering a seamless blend of theory and video courses. Dive into comprehensive lessons, from foundational theories to real-world applications, tailored to your learning preferences. Experience the future of AI education with AiCourse – where theory meets engaging visuals for a transformative learning journey!.</p>
+                          <p style="font-size:14px;line-height:24px;margin:16px 0;color:rgb(0,0,0)">Welcome to <strong>${emailName}</strong>, Unleash your AI potential with our platform, offering a seamless blend of theory and video courses. Dive into comprehensive lessons, from foundational theories to real-world applications, tailored to your learning preferences. Experience the future of AI education with AiCourse – where theory meets engaging visuals for a transformative learning journey!.</p>
                           <table align="center" border="0" cellPadding="0" cellSpacing="0" role="presentation" width="100%" style="margin-bottom:32px;margin-top:32px;text-align:center">
                             <tbody>
                               <tr>
-                                <td><a href="${websiteURL}" target="_blank" style="p-x:20px;p-y:12px;line-height:100%;text-decoration:none;display:inline-block;max-width:100%;padding:12px 20px;border-radius:0.25rem;background-color:rgb(0,0,0);text-align:center;font-size:12px;font-weight:600;color:rgb(255,255,255);text-decoration-line:none"><span></span><span style="p-x:20px;p-y:12px;max-width:100%;display:inline-block;line-height:120%;text-decoration:none;text-transform:none;mso-padding-alt:0px;mso-text-raise:9px"><span>Get Started</span></a></td>
+                                <td><a href="${emailWebsiteURL}" target="_blank" style="p-x:20px;p-y:12px;line-height:100%;text-decoration:none;display:inline-block;max-width:100%;padding:12px 20px;border-radius:0.25rem;background-color:rgb(0,0,0);text-align:center;font-size:12px;font-weight:600;color:rgb(255,255,255);text-decoration-line:none"><span></span><span style="p-x:20px;p-y:12px;max-width:100%;display:inline-block;line-height:120%;text-decoration:none;text-transform:none;mso-padding-alt:0px;mso-text-raise:9px"><span>Get Started</span></a></td>
                               </tr>
                             </tbody>
                           </table>
-                          <p style="font-size:14px;line-height:24px;margin:16px 0;color:rgb(0,0,0)">Best,<p target="_blank" style="color:rgb(0,0,0);text-decoration:none;text-decoration-line:none">The <strong>${company}</strong> Team</p></p>
+                          <p style="font-size:14px;line-height:24px;margin:16px 0;color:rgb(0,0,0)">Best,<p target="_blank" style="color:rgb(0,0,0);text-decoration:none;text-decoration-line:none">The <strong>${emailCompany}</strong> Team</p></p>
                           </td>
                       </tr>
                     </table>
@@ -151,20 +139,19 @@ const SignUp = () => {
                 
                 </html>`,
       };
+
+      console.log("Data to send:", dataToSend); 
+
       const postURL = serverURL + "/api/data";
-      await axios
-        .post(postURL, dataToSend)
-        .then((res) => {
-          redirectHome();
-        })
-        .catch((error) => {
-          redirectHome();
-        });
+
+      await axios.post(postURL, dataToSend);
+      redirectHome();
     } catch (error) {
+      console.log("Error sending email:", error);
       redirectHome();
     }
   }
-  const provider = new GoogleAuthProvider();
+
   return (
     <GoogleOAuthProvider clientId="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">
       <Flowbite>
@@ -180,10 +167,7 @@ const SignUp = () => {
               <DarkModeToggle />
             </Navbar>
 
-            <form
-              onSubmit={handleSignup}
-              className="max-w-sm m-auto py-4 no-scrollbar"
-            >
+            <form onSubmit={handleSignup} className="max-w-sm m-auto py-4 no-scrollbar">
               <h1 className="text-center font-black text-5xl text-black dark:text-white">
                 SignUp
               </h1>
@@ -194,11 +178,7 @@ const SignUp = () => {
               <div className="py-6">
                 <div className="mb-6">
                   <div className="mb-2 block">
-                    <Label
-                      className="font-bold text-black dark:text-white"
-                      htmlFor="name1"
-                      value="Name"
-                    />
+                    <Label className="font-bold text-black dark:text-white" htmlFor="name1" value="Name" />
                   </div>
                   <input
                     value={mName}
@@ -210,11 +190,7 @@ const SignUp = () => {
                 </div>
                 <div className="mb-6">
                   <div className="mb-2 block">
-                    <Label
-                      className="font-bold text-black dark:text-white"
-                      htmlFor="email1"
-                      value="Email"
-                    />
+                    <Label className="font-bold text-black dark:text-white" htmlFor="email1" value="Email" />
                   </div>
                   <input
                     value={email}
@@ -226,11 +202,7 @@ const SignUp = () => {
                 </div>
                 <div className="mb-14">
                   <div className="mb-2 block">
-                    <Label
-                      className="font-bold text-black dark:text-white"
-                      htmlFor="password1"
-                      value="Password"
-                    />
+                    <Label className="font-bold text-black dark:text-white" htmlFor="password1" value="Password" />
                   </div>
                   <input
                     value={password}
@@ -240,17 +212,11 @@ const SignUp = () => {
                     type="password"
                   />
                 </div>
-                <GoogleSignUpButton
-                  text="Sign up with Google"
-                  showToast={showToast}
-                  navigate={navigate}
-                />
+                <GoogleSignUpButton text="Sign up with Google" showToast={showToast} navigate={navigate} sendEmail={sendEmail} />
                 <div className="mt-4">
                   <Button
                     isProcessing={processing}
-                    processingSpinner={
-                      <AiOutlineLoading className="h-6 w-6 animate-spin" />
-                    }
+                    processingSpinner={<AiOutlineLoading className="h-6 w-6 animate-spin" />}
                     className="items-center justify-center text-center dark:bg-white dark:text-black bg-black text-white font-bold rounded-none w-full enabled:hover:bg-black enabled:focus:bg-black enabled:focus:ring-transparent dark:enabled:hover:bg-white dark:enabled:focus:bg-white dark:enabled:focus:ring-transparent"
                     type="submit"
                   >
@@ -258,10 +224,7 @@ const SignUp = () => {
                   </Button>
                 </div>
 
-                <p
-                  onClick={redirectSignIn}
-                  className="text-center font-normal text-black underline pt-4  dark:text-white"
-                >
+                <p onClick={redirectSignIn} className="text-center font-normal text-black underline pt-4 dark:text-white">
                   Already have an account ? SignIn
                 </p>
               </div>
@@ -269,11 +232,7 @@ const SignUp = () => {
           </div>
 
           <div className="flex-1 hidden lg:flex items-center justify-center bg-gray-50 dark:bg-white">
-            <img
-              alt="logo"
-              src={img}
-              className="h-full bg-cover bg-center p-9"
-            />
+            <img alt="logo" src={img} className="h-full bg-cover bg-center p-9" />
           </div>
         </div>
       </Flowbite>

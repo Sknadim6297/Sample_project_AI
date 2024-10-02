@@ -15,20 +15,20 @@ const Dashboard = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [data, setData] = useState({});
 
-    useEffect(() => {
-        sessionStorage.setItem('darkMode', false);
-        async function dashboardData() {
-            const postURL = serverURL + `/api/dashboard`;
-            const response = await axios.post(postURL);
-            setData(response.data)
-    //         // sessionStorage.setItem('terms', response.data.admin.terms)
-    //         // sessionStorage.setItem('privacy', response.data.admin.privacy)
-    //         // sessionStorage.setItem('cancel', response.data.admin.cancel)
-    //         // sessionStorage.setItem('refund', response.data.admin.refund)
-    //         // sessionStorage.setItem('billing', response.data.admin.billing)
-        }
-        dashboardData();
-    }, []);
+    // useEffect(() => {
+    //     sessionStorage.setItem('darkMode', false);
+    //     async function dashboardData() {
+    //         const postURL = serverURL + `/api/dashboard`;
+    //         const response = await axios.post(postURL);
+    //         setData(response.data)
+    // //         // sessionStorage.setItem('terms', response.data.admin.terms)
+    // //         // sessionStorage.setItem('privacy', response.data.admin.privacy)
+    // //         // sessionStorage.setItem('cancel', response.data.admin.cancel)
+    // //         // sessionStorage.setItem('refund', response.data.admin.refund)
+    // //         // sessionStorage.setItem('billing', response.data.admin.billing)
+    //     }
+    //     dashboardData();
+    // }, []);
 
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
